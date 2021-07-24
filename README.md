@@ -1,2 +1,2 @@
-# Conways_game_of_life
+# Conway's game of life
 An implementation of Conway's Game of Life
