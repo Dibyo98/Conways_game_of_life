@@ -9,7 +9,10 @@ public:
 	~Cells();
 	void init();
 	void draw(sf::RenderWindow& window);
+	void updateDisplay();
+	void updateState();
 	void update();
+	int neighbourCount(const int& x, const int& y) const;
 	void randomize();
 
 private:
@@ -19,7 +22,9 @@ private:
 		sf::RectangleShape cell;
 		m_State state = m_State::dead;
 	};
+
 	Cell* cells;
+	m_State* buffer;
 
 	const int& matrixSize;
 	const int arraySize;
@@ -29,5 +34,8 @@ private:
 	const sf::Color fillColour;
 	const sf::Color backgroundColour;
 	const sf::Color outlineColour;
+
+private:
+	m_State fate(const int& x, const int& y) const;
 };
 

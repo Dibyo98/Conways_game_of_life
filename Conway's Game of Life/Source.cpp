@@ -3,13 +3,15 @@
 
 #include "Cells.h"
 
-constexpr unsigned int matrixSize = 16;
+constexpr float updatePerSecond = 2.0f;
+
+constexpr unsigned int matrixSize = 64;
 constexpr unsigned int windowBorder = 5;
 constexpr unsigned int windowSize = 800;
 constexpr unsigned int outlineThickness = 1;
 
 const sf::Color backgroundColour = sf::Color::Black;
-const sf::Color fillColour = sf::Color::Blue;
+const sf::Color fillColour = sf::Color::Green;
 const sf::Color outlineColour = sf::Color::White;
 
 constexpr unsigned int arraySize = matrixSize * matrixSize;
@@ -23,9 +25,12 @@ int main()
 	Cells cells(matrixSize, cellSize, fillColour, backgroundColour, outlineColour, outlineThickness, windowBorder);
 	cells.init();
 	cells.randomize();
-	cells.update();
+	cells.updateDisplay();
 
 	sf::Event event;
+	sf::Clock clock;
+	sf::Time accumulator = sf::Time::Zero;
+	sf::Time ups = sf::seconds(1.0f / updatePerSecond);
 
 	while (window.isOpen())
 	{
@@ -37,10 +42,17 @@ int main()
 				window.close();
 			}
 		}
-		
-		window.clear(backgroundColour);
-		cells.draw(window);
-		window.display();
+
+		while (accumulator > ups)
+		{
+			accumulator -= ups;
+			cells.update();
+
+			window.clear(backgroundColour);
+			cells.draw(window);
+			window.display();
+		}
+		accumulator += clock.restart();
 	}
 
 	return 0;
