@@ -5,28 +5,34 @@
 Cells::Cells(
 	const int& matrixSize,
 	const float& cellSize,
-	const sf::Color& fillColour = sf::Color::Green,
-	const sf::Color& backgroundColour = sf::Color::White,
-	const sf::Color& outlineColour = sf::Color::Black,
-	const int& outlineThickness = 0,
-	const int& windowBorder = 0
+	const int& windowBorder,
+	const int& outlineThickness,
+	const int& xOffset,
+	const int& yOffset,
+	const sf::Color& fillColour,
+	const sf::Color& backgroundColour,
+	const sf::Color& outlineColour
 )
 	: matrixSize(matrixSize)
-	, arraySize(matrixSize* matrixSize)
+	, arraySize(matrixSize * matrixSize)
 	, cellSize(cellSize)
+	, windowBorder(windowBorder)
+	, outlineThickness(outlineThickness)
+	, xOffset(xOffset)
+	, yOffset(yOffset)
 	, fillColour(fillColour)
 	, backgroundColour(backgroundColour)
 	, outlineColour(outlineColour)
-	, outlineThickness(outlineThickness)
-	, windowBorder(windowBorder)
 {
 	cells = new Cell[arraySize];
 	buffer = new m_State[arraySize];
+	alive = 0;
 }
 
 Cells::~Cells()
 {
 	delete[] cells;
+	delete[] buffer;
 }
 
 void Cells::init()
@@ -37,9 +43,9 @@ void Cells::init()
 		cells[i].cell.setSize({ cellSize, cellSize });
 		cells[i].cell.setFillColor(backgroundColour);
 		cells[i].cell.setOutlineColor(outlineColour);
-		cells[i].cell.setOutlineThickness(outlineThickness);
-		xPos = windowBorder + outlineThickness;
-		yPos = windowBorder + outlineThickness;
+		cells[i].cell.setOutlineThickness(float(outlineThickness));
+		xPos = float(xOffset + windowBorder + outlineThickness);
+		yPos = float(yOffset + windowBorder + outlineThickness);
 		xPos += float(int(i % matrixSize) * cellSize);
 		yPos += float(int(i / matrixSize) * cellSize);
 		cells[i].cell.setPosition({ xPos, yPos });
@@ -70,8 +76,9 @@ void Cells::updateDisplay()
 	}
 }
 
-void Cells::updateState()
+int Cells::updateState()
 {
+	int alive = 0;
 	int neighbourCount = 0;
 	int x = 0, y = 0;
 	for (int i = 0; i < arraySize; i++)
@@ -84,13 +91,16 @@ void Cells::updateState()
 	for (int i = 0; i < arraySize; i++)
 	{
 		cells[i].state = buffer[i];
+		alive += static_cast<int>(cells[i].state);
 	}
+	return alive;
 }
 
-void Cells::update()
+int Cells::update()
 {
-	updateState();
+	int ret = updateState();
 	updateDisplay();
+	return ret;
 }
 
 int Cells::neighbourCount(const int& x, const int& y) const
