@@ -70,6 +70,7 @@ int main()
 		{
 			accumulator -= ups;
 			alive = cells.update();
+
 			dead = total - alive;
 			generation++;
 			std::stringstream().swap(statusText);
